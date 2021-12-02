@@ -15,5 +15,3 @@ docker_packges:
   - "docker-ce-cli"
   - "containerd.io"
 docker_compose_url: https://github.com/docker/compose/releases/download/v2.2.1/docker-compose-linux-x86_64
-
-
