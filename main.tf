@@ -19,14 +19,6 @@ data "aws_ami" "ubuntu_ami" {
   }
 }
 
-output "ec2_public_ip" {
-  value = aws_instance.myapp-server.public_ip
-}
-
-output "ami_id" {
-  value = data.aws_ami.ubuntu_ami.id
-}
-
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
@@ -112,3 +104,10 @@ resource "aws_instance" "myapp-server" {
   }
 }
 
+output "ec2_public_ip" {
+  value = aws_instance.myapp-server.public_ip
+}
+
+output "ami_id" {
+  value = data.aws_ami.ubuntu_ami.id
+}
