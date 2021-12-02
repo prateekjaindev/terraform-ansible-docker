@@ -6,9 +6,11 @@ variable "instance_type" {}
 variable "my_ip" {}
 variable "key_name" {}
 variable "region" {}
+variable "key_path" {}
+variable "ansible_user" {}
 
 provider "aws" {
-    region     = var.region
+  region = var.region
 }
 data "aws_ami" "ubuntu_ami" {
   most_recent = true
@@ -46,8 +48,8 @@ resource "aws_security_group" "myapp-sg" {
   }
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
     protocol    = "tcp"
   }
@@ -102,7 +104,25 @@ resource "aws_instance" "myapp-server" {
   tags = {
     "Name" = "${var.env_prefix}-server"
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Connection Established' "
+    ]
+
+    connection {
+      host        = self.public_ip
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file(var.key_path)
+    }
+  }
+  provisioner "local-exec" {
+    command = "sudo ansible-playbook -u ${var.ansible_user} -i ${aws_instance.myapp-server.public_ip}, --private-key ${var.key_path} tasks.yaml"
+  }
+
 }
+
 
 output "ec2_public_ip" {
   value = aws_instance.myapp-server.public_ip
